@@ -104,8 +104,6 @@ void parseOpt(int argc, char *argv[])
 
 int main(int argc, char** argv)
 {
-    time_ = 0;
-    timing = &time_;
     int i;
     parseOpt(argc, argv);
     printf("begin\n");
@@ -196,7 +194,7 @@ void doTrace()
     r = recvfrom(s, ciphertext, 16,0, (struct sockaddr *) &server, &len);   
     // check current cache state (reload the same address)
     // record timing and ciphertext
-    time_ = reload(target);
+    *timing = reload(target);
     saveTrace();
 #ifdef DEBUG
     printText(ciphertext, 16, "ciphertext");
