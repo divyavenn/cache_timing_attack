@@ -30,7 +30,7 @@ int fd = -1;
 char *victimBinaryFileName;
 
 FILE *timingFP, *cipherFP, *plainFP;
-size_t offset;
+int offset;
 
 uint8_t *plaintext, *ciphertext;
 uint32_t *timing;
