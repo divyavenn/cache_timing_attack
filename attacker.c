@@ -199,7 +199,7 @@ void doTrace()
     printf("Saving Trace\n");
     saveTrace();
 //#ifdef DEBUG
-    printText(ciphertext, 16, "ciphertext");
+    //printText(ciphertext, 16, "ciphertext");
     printf("Timing: %i\n", *timing);
 //#endif
 }
@@ -247,9 +247,9 @@ void init()
     target = map_offset(victimBinaryFileName, offset);
 
 // #ifdef DEBUG
-    printf("offset: %x\n", offset);
-    printf("target: %p\n", target);
-    printText(target, 16, "Target");
+    //printf("offset: %x\n", offset);
+    //printf("target: %p\n", target);
+    //printText(target, 16, "Target");
     // printText(target + 256 * 4, 16, "T1");
 // #endif
 

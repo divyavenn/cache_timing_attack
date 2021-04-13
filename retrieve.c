@@ -13,8 +13,17 @@
 #include <openssl/aes.h>
 
 
+#define N 1000000 
 int main(int argc, char* argv[]){
+	unsigned char C[N];
+	FILE *ptr;
 
+	ptr = fopen("timing.bin","rb");  // r for read, b for binary
+
+	fread(C,sizeof(C),1,ptr);
+
+	for(int i = 0; i<N; i++)
+		    printf("%i ", C[i]);
 	return 0;
 
 }
