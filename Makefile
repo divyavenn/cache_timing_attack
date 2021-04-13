@@ -3,16 +3,17 @@ OPENSSL_DIR=../openssl
 LDPATH=-L$(OPENSSL_DIR)
 LDLIB=-lcrypto
 CFLAGS=-I$(OPENSSL_DIR)include/ -ldl
-all: attacker victim analysis
+all: attacker victim analysis recover
 
 attacker: attacker.c
-	$(CC) attacker.c -g -o attacker $(LDLIB) $(LDPATH) $(CFLAGS)
+	 gcc attacker.c -Iopenssl/includes -Lopenssl/ -o attacker -lcrypto
 
 victim: victim.c
-	$(CC) victim.c -o victim $(LDLIB) $(LDPATH) $(CFLAGS)
+	gcc victim.c -Iopenssl/includes -Lopenssl/ -o victim -lcrypto
 
-analysis: analysis.c
+analysis: 
 	$(CC) analysis.c -o analysis
-
+recover:
+	gcc recover.c -o recover
 clean:
-	rm -rf  victim attacker analysis
+	rm -rf  victim attacker analysis recover

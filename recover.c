@@ -66,15 +66,23 @@ int main(int argc, char** argv){
         printf("Number samples used: %i\n", i);
 #endif
 }
+
+
+int findMaxIndex(int arr[]){
+	int max = 0;
+	for (int i = 1; i < 255 ; i++){
+		if (arr[i] > arr[max]){
+			max = i;
+		}
+	}
+	return max;
+}
 void saveResult()
 {
-    int i, j;
-	for(i = 0; i < 16; i++){
-		for(j = 0; j < 255; j++){
-			fprintf(resultFP, "%d ", key[i][j]);
-		}
-		fprintf(resultFP, "%d\n", key[i][j]);
-	}
+    fprintf(resultFP, "%x \n", findMaxIndex(key[1]));
+    fprintf(resultFP, "%x \n", findMaxIndex(key[5]));
+    fprintf(resultFP, "%x \n", findMaxIndex(key[9]));
+    fprintf(resultFP, "%x \n", findMaxIndex(key[13]));
 }
 void processTrace()
 {
@@ -119,8 +127,8 @@ void init()
     timing = (uint32_t *) malloc(sizeof(uint32_t));
 
     /* open required file to read/write */
-    timingFP = fopen(timingFileName, "r");
-    cipherFP = fopen(cipherFileName, "r");
+    timingFP = fopen(timingFileName, "rb");
+    cipherFP = fopen(cipherFileName, "rb");
     resultFP = fopen(resultFileName, "w");
     resetCounter();
 }
